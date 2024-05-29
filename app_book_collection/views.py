@@ -32,6 +32,18 @@ def create_user(request):
     profile_serialized = ProfileSerializer(profile)
     return Response(profile_serialized.data)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_books(request):
+    print(request)
+    books = Book.objects.all()
+    return Response(books)
+    # serialized_book = BookSerializer(request)
+    # return Response(serialized_book.data)
+
+
+
+
 
 class BookViewSet(viewsets.ModelViewSet):
     queryset = Book.objects.all()
