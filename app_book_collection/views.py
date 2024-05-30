@@ -37,9 +37,39 @@ def create_user(request):
 def get_books(request):
     print(request)
     books = Book.objects.all()
-    return Response(books)
-    # serialized_book = BookSerializer(request)
+    serialized_books = BookSerializer(books, many=True)
+    return Response(serialized_books.data)
     # return Response(serialized_book.data)
+
+
+@api_view(['GET', 'POST', 'DELETE'])
+@permission_classes([])  # Adjust permission classes as needed
+def book_list(request):
+    # Handle GET request to fetch all books
+    if request.method == 'GET':
+        books = Book.objects.all()
+        serializer = BookSerializer(books, many=True)
+        return Response(serializer.data)
+    
+    # Handle POST request to create a new book
+    elif request.method == 'POST':
+        # Deserialize the request data into a Book object
+        serializer = BookSerializer(data=request.data)
+        # Validate the deserialized data
+        if serializer.is_valid(): # Save the validated data to the database
+            serializer.save()
+            return Response(serializer.data)
+    
+    # Handle DELETE request to delete a book
+    elif request.method == 'DELETE':
+        # Get the book ID from request data
+        book_id = request.data.get('id')
+        # Query the book from the database
+        book = Book.objects.get(id=book_id)
+        # Delete the book from the database
+        book.delete()
+            
+
 
 
 
